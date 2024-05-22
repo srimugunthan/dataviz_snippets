@@ -1,0 +1,38 @@
+Multiple density plots
+
+data = pd.DataFrame({'coll_prop_tenure': {0: 0.04, 1: 0.0, 2: 0.0, 3: 0.06, 4: 0.38, 5: 0.61, 6: 0.01, 7: 0.1, 8: 0.04, 9: 0.22, 10: 0.72, 11: 0.39}, \
+                    'coll_prop_12m': {0: 0.04, 1: 0.0, 2: 0.0, 3: 0.06, 4: 0.38, 5: 0.61, 6: 0.01, 7: 0.1, 8: 0.04, 9: 0.22, 10: 0.72, 11: 0.39}, \
+                    'coll_prop_6m': {0: 0.06, 1: 0.0, 2: 0.0, 3: 0.1, 4: 0.25, 5: 0.66, 6: 0.02, 7: 0.12, 8: 0.04, 9: 0.22, 10: 0.73, 11: 0.45}, \
+                    'coll_prop_3m': {0: 0.08, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.61, 6: 0.02, 7: 0.16, 8: 0.09, 9: 0.22, 10: 0.72, 11: 0.64}})
+
+f, axes = plt.subplots(2, 2, figsize=(7, 7), sharex=True)
+sns.distplot(data.iloc[:,0], color="skyblue", ax=axes[0,0])
+sns.distplot(data.iloc[:,1], color="olive", ax=axes[0,1])
+sns.distplot(data.iloc[:,2], color="gold", ax=axes[1,0])
+sns.distplot(data.iloc[:,3], color="teal", ax=axes[1,1])
+for i, ax in enumerate(axes.reshape(-1)):
+    ax.text(x=0.97, y=0.97, transform=ax.transAxes, s="Skewness: %f" % data.iloc[:,i].skew(),\
+        fontweight='demibold', fontsize=10, verticalalignment='top', horizontalalignment='right',\
+        backgroundcolor='white', color='xkcd:poo brown')
+    ax.text(x=0.97, y=0.91, transform=ax.transAxes, s="Kurtosis: %f" % data.iloc[:,i].kurt(),\
+        fontweight='demibold', fontsize=10, verticalalignment='top', horizontalalignment='right',\
+        backgroundcolor='white', color='xkcd:dried blood')
+plt.tight_layout()
+
+
+percentage across bins
+
+np.random.seed(0)
+data1 = np.random.normal(loc=0.5, scale=0.25, size=(2000,))
+data2 = np.random.normal(loc=0.75, scale=0.1, size=(500,))
+
+bins,step = np.linspace(0,1,11, retstep=True)
+hist1,_ = np.histogram(data1, bins=bins)
+hist2,_ = np.histogram(data2, bins=bins)
+prop1 = 100*hist1/(hist1+hist2)
+prop2 = 100*hist2/(hist1+hist2)
+
+fig, ax = plt.subplots()
+ax.bar(x=bins[:-1], height=prop1, bottom=0, align='edge', width=step)
+ax.bar(x=bins[:-1], height=prop2, bottom=prop1, align='edge', width=step)
+ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter())
